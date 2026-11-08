@@ -1,0 +1,32 @@
+[package]
+name = "nuke-file-manager"
+version = "0.1.0"
+description = "A Total Commander style dual-pane file manager"
+authors = ["Nuke"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "file_manager_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "fs", "sync"] }
+async-trait = "0.1"
+thiserror = "2"
+trash = "5"
+uuid = { version = "1", features = ["v4"] }
+chrono = { version = "0.4", features = ["serde"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+dirs = "5"
+
+[features]
+# Used for production builds or when a dev server is not specified.
+custom-protocol = ["tauri/custom-protocol"]

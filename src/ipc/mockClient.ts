@@ -1,0 +1,52 @@
+import type { IpcApi, UnlistenFn } from './api'
+import * as mock from './mock'
+
+/// IPC implementation used in plain browser dev (no backend available).
+export const mockIpc: IpcApi = {
+  listDir: mock.listDir,
+  getMetadata: mock.getMetadata,
+  copyItems: mock.copyItems,
+  moveItems: mock.moveItems,
+  deleteItems: mock.deleteItems,
+  renameItem: mock.renameItem,
+  createDir: mock.createDir,
+  getDrives: mock.getDrives,
+  getHomeDir: mock.getHomeDir,
+  onProgress: (callback) => Promise.resolve<UnlistenFn>(mock.onProgress(callback)),
+  onCompleted: (callback) => Promise.resolve<UnlistenFn>(mock.onCompleted(callback)),
+
+  pauseOperation: () => Promise.resolve(true),
+  resumeOperation: () => Promise.resolve(true),
+  cancelOperation: () => Promise.resolve(true),
+
+  search: mock.search,
+  readFileText: mock.readFileText,
+  writeFileText: mock.writeFileText,
+  openPath: mock.openPath,
+  openWith: mock.openWith,
+  checksums: mock.checksums,
+  multiRename: mock.multiRename,
+  splitFile: mock.splitFile,
+  combineFiles: mock.combineFiles,
+  packZip: mock.packZip,
+  extractZip: mock.extractZip,
+  packTar: mock.packTar,
+  extractTar: mock.extractTar,
+  extractArchive: mock.extractArchive,
+  extractArchiveEntry: mock.extractArchiveEntry,
+  compareDirs: mock.compareDirs,
+  syncDirs: mock.syncDirs,
+  tree: mock.tree,
+
+  remoteList: mock.remoteList,
+  remoteSave: mock.remoteSave,
+  remoteDeleteConnection: mock.remoteDeleteConnection,
+  remoteTest: mock.remoteTest,
+  remoteConnect: mock.remoteConnect,
+  remoteDisconnect: mock.remoteDisconnect,
+  remoteMkdir: mock.remoteMkdir,
+  remoteDeleteFiles: mock.remoteDeleteFiles,
+  remoteRename: mock.remoteRename,
+  remoteDownload: mock.remoteDownload,
+  remoteUpload: mock.remoteUpload,
+}

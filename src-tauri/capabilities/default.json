@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Base capability for the main window. Filesystem I/O is mediated by the app's own commands, not the raw fs plugin.",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}

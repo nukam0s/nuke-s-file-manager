@@ -1,0 +1,71 @@
+{
+  "name": "nuke-file-manager",
+  "private": true,
+  "version": "0.4.0",
+  "type": "module",
+  "description": "A Total Commander style dual-pane file manager (Electron portable + React)",
+  "license": "MIT",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:web": "vite build",
+    "build:sea": "node scripts/build-sea.mjs",
+    "server": "node server/main.js",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "tauri": "tauri",
+    "bundle:server": "node scripts/bundle-server.mjs",
+    "build:electron": "npm run build && npm run bundle:server && electron-builder --win portable",
+    "electron:dev": "npm run build && npm run bundle:server && electron ."
+  },
+  "dependencies": {
+    "@tanstack/react-virtual": "^3.11.2",
+    "@tauri-apps/api": "^2.1.1",
+    "adm-zip": "^0.5.16",
+    "basic-ftp": "^6.2.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "ssh2-sftp-client": "^12.1.1",
+    "tar": "^7.4.3",
+    "webdav": "^5.11.0",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.1.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "electron": "^45.2.3",
+    "electron-builder": "^26.18.0",
+    "esbuild": "^0.25.0",
+    "postcss": "^8.4.49",
+    "postject": "^1.0.0-alpha.6",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.5",
+    "vitest": "^2.1.8"
+  },
+  "build": {
+    "appId": "com.nukefm.app",
+    "productName": "Nuke File Manager",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "electron/**",
+      "build/server.cjs",
+      "!node_modules/**"
+    ],
+    "npmRebuild": false,
+    "win": {
+      "target": [
+        {
+          "target": "portable"
+        }
+      ]
+    }
+  }
+}
