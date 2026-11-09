@@ -15,6 +15,7 @@ alternativa/legado e Tauri como opção nativa.
 | 06 | [`06-roadmap.md`](06-roadmap.md) | Fases MVP → v1 |
 | 07 | [`07-node-portable.md`](07-node-portable.md) | **Backend portátil Node SEA** (alternativa/legado: build/exe/API) |
 | 08 | [`08-electron.md`](08-electron.md) | **Empacotamento Electron** (janela nativa, build `.exe`) |
+| 10 | [`10-settings-persistence.md`](10-settings-persistence.md) | **Persistência de definições** (hotlist/associações fora do `localStorage`) |
 
 ## Paridade funcional
 

@@ -11,6 +11,8 @@ import { StatusBar } from './components/layout/StatusBar'
 import { ToolsLayer } from './components/tools/ToolsLayer'
 import { useKeyboard } from './hooks/useKeyboard'
 import { ipc } from './ipc/client'
+import { hydrateAssociations } from './state/associationsStore'
+import { hydrateHotlist } from './state/hotlistStore'
 import { useOperationStore } from './state/operationStore'
 import { usePaneStore } from './state/paneStore'
 import { useRemoteStore } from './state/remoteStore'
@@ -27,6 +29,13 @@ export default function App() {
   useEffect(() => {
     void init()
   }, [init])
+
+  // Hotlist and extension associations live on the backend (the window origin
+  // changes with the random port, so localStorage alone does not survive restarts).
+  useEffect(() => {
+    void hydrateHotlist()
+    void hydrateAssociations()
+  }, [])
 
   // Preload remote connections so path bars / tabs can render readable labels.
   useEffect(() => {

@@ -49,4 +49,7 @@ export const mockIpc: IpcApi = {
   remoteRename: mock.remoteRename,
   remoteDownload: mock.remoteDownload,
   remoteUpload: mock.remoteUpload,
+
+  getSetting: mock.getSetting,
+  setSetting: mock.setSetting,
 }

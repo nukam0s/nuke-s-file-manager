@@ -181,3 +181,15 @@ export interface RemoteTransferResult {
   destination: string
   size: number
 }
+
+// --- Persistent settings (hotlist / extension associations) ---
+
+/// Response of `GET /api/settings?key=<key>`. `value` is `null` when unset.
+export interface SettingReadResult {
+  value: unknown
+}
+
+/// Response of `POST /api/settings`.
+export interface SettingWriteResult {
+  ok: boolean
+}

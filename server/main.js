@@ -11,6 +11,7 @@ import * as svc from './fsService.js'
 import * as tools from './toolsService.js'
 import * as archive from './archiveService.js'
 import * as remote from './remoteService.js'
+import * as settings from './settingsService.js'
 
 const clients = new Set()
 
@@ -133,6 +134,13 @@ async function handleApi(req, res, url) {
     if (req.method === 'GET' && route === '/api/drives') return sendJson(res, 200, svc.getDrives())
     if (req.method === 'GET' && route === '/api/raw') return serveRaw(res, url)
 
+    // Persistent UI settings (hotlist / extension associations). Stored as JSON files
+    // under %APPDATA%/NukeFileManager/settings so they survive the random port.
+    if (req.method === 'GET' && route === '/api/settings') {
+      const value = await settings.getSetting(url.searchParams.get('key') || '')
+      return sendJson(res, 200, { value })
+    }
+
     if (req.method === 'GET' && route === '/api/events') {
       res.writeHead(200, {
         'content-type': 'text/event-stream; charset=utf-8',
@@ -147,6 +155,11 @@ async function handleApi(req, res, url) {
 
     if (req.method === 'POST') {
       const body = await readBody(req)
+
+      if (route === '/api/settings') {
+        await settings.setSetting(body.key, body.value)
+        return sendJson(res, 200, { ok: true })
+      }
 
       if (route === '/api/list_dir') {
         if (remote.isRemotePath(body.path)) {

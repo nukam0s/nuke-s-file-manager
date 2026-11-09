@@ -20,6 +20,7 @@ import type {
   RemoteListResult,
   RemoteTestResult,
   RemoteTransferResult,
+  SettingWriteResult,
   TreeResult,
 } from './types'
 
@@ -83,4 +84,9 @@ export interface IpcApi {
   remoteRename(path: string, newName: string): Promise<FileEntry>
   remoteDownload(path: string, destination: string): Promise<RemoteTransferResult>
   remoteUpload(localPath: string, destination: string): Promise<FileEntry>
+
+  // Persistent settings (survive restarts even though the backend port is random).
+  /// Returns the stored JSON value, or `null` when the key was never written.
+  getSetting(key: string): Promise<unknown>
+  setSetting(key: string, value: unknown): Promise<SettingWriteResult>
 }

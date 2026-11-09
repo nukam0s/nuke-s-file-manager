@@ -478,6 +478,19 @@ export async function remoteUpload(_localPath: string, destination: string): Pro
   return entry('uploaded.txt', destination, false)
 }
 
+// --- Persistent settings mock (memory only; the stores also keep localStorage) ---
+
+const settingsDb = new Map<string, unknown>()
+
+export async function getSetting(key: string): Promise<unknown> {
+  return settingsDb.has(key) ? settingsDb.get(key) : null
+}
+
+export async function setSetting(key: string, value: unknown): Promise<{ ok: boolean }> {
+  settingsDb.set(key, value)
+  return { ok: true }
+}
+
 export function onProgress(callback: (update: ProgressUpdate) => void): () => void {
   progressListeners.add(callback)
   return () => progressListeners.delete(callback)

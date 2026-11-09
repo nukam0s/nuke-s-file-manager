@@ -1,5 +1,10 @@
 import type { IpcApi, UnlistenFn } from './api'
-import type { OperationResult, ProgressUpdate } from './types'
+import type {
+  OperationResult,
+  ProgressUpdate,
+  SettingReadResult,
+  SettingWriteResult,
+} from './types'
 
 // The window is served by the local backend (Electron/portable), so the current
 // origin is the backend base URL. Relative routes already resolve against it,
@@ -96,6 +101,12 @@ export const httpIpc: IpcApi = {
   remoteRename: (path, newName) => post('/api/remote/rename', { path, newName }),
   remoteDownload: (path, destination) => post('/api/remote/download', { path, destination }),
   remoteUpload: (localPath, destination) => post('/api/remote/upload', { localPath, destination }),
+
+  getSetting: (key) =>
+    get<SettingReadResult>(`/api/settings?key=${encodeURIComponent(key)}`).then(
+      (result) => result.value ?? null,
+    ),
+  setSetting: (key, value) => post<SettingWriteResult>('/api/settings', { key, value }),
 
   onProgress(callback) {
     const source = events()

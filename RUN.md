@@ -95,6 +95,18 @@ by design, because they execute the signed Electron runtime rather than the re-p
 
 ---
 
+## Persisted settings
+
+Hotlist and extension→command associations are stored by the backend in
+`%APPDATA%\NukeFileManager\settings\` (`hotlist.json`, `associations.json`), **not** in
+`localStorage` — the window origin changes with the random port, so browser storage would be lost on
+every restart. `localStorage` is kept only as a fallback (browser dev / Tauri) and as the migration
+source for data written by older versions. See
+[`docs/architecture/10-settings-persistence.md`](docs/architecture/10-settings-persistence.md) for the
+API contract and the two-launch validation procedure.
+
+---
+
 ## Other ways to run
 
 ```bash

@@ -87,6 +87,10 @@ export const tauriIpc: IpcApi = {
   remoteRename: () => notSupported('Ficheiros remotos'),
   remoteDownload: () => notSupported('Ficheiros remotos'),
   remoteUpload: () => notSupported('Ficheiros remotos'),
+
+  // Settings live in the portable Node backend; the Tauri build keeps localStorage.
+  getSetting: () => notSupported('Definições persistentes'),
+  setSetting: () => notSupported('Definições persistentes'),
 }
 
 export type { UnlistenFn }
