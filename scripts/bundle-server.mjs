@@ -9,6 +9,31 @@ const distDir = path.join(root, 'dist')
 const buildDir = path.join(root, 'build')
 const serverDir = path.join(root, 'server')
 
+// Portable builds must never embed native `.node` binaries: electron-builder
+// ships only `build/server.cjs` (see package.json → "build.files"), so any
+// bundled binding would be unresolvable at runtime anyway. `ssh2` and
+// `cpu-features` load their bindings inside try/catch and silently fall back
+// to pure JavaScript when the require throws, which is exactly what we want.
+//
+// Without this stub esbuild fails hard with
+//   [ERROR] No loader is configured for ".node" files: ...sshcrypto.node
+// on machines whose `ssh2` tarball contains prebuilt binaries (GitHub Actions
+// runners do; some developer machines do not), making releases flaky.
+const stubNativeBindings = {
+  name: 'stub-native-bindings',
+  setup(build) {
+    build.onResolve({ filter: /\.node$/ }, (args) => ({
+      path: args.path,
+      namespace: 'native-stub',
+    }))
+    build.onLoad({ filter: /.*/, namespace: 'native-stub' }, () => ({
+      contents:
+        'throw new Error("native bindings are not available in the portable build");',
+      loader: 'js',
+    }))
+  },
+}
+
 const MIME = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8',
@@ -82,6 +107,7 @@ async function main() {
     target: 'node20',
     outfile: path.join(buildDir, 'server.cjs'),
     logLevel: 'info',
+    plugins: [stubNativeBindings],
   })
 
   console.log(`\nElectron server bundle ready:\n   ${path.join(buildDir, 'server.cjs')}`)
