@@ -1,0 +1,80 @@
+# ---------------------------------------------------------------------------
+# Release — pushing a tag `v*` (e.g. v0.4.0) builds the portable Windows .exe
+# and publishes a GitHub Release with it plus a SHA-256 checksum file.
+#
+# NOTE: the .exe is UNSIGNED (no code-signing certificate). SmartScreen /
+# Smart App Control may warn or block it on first run — this is known and
+# documented in the README ("Download" section).
+# ---------------------------------------------------------------------------
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  release:
+    name: Build & publish portable .exe (windows-latest, Node 22)
+    runs-on: windows-latest
+    permissions:
+      contents: write   # minimum required to create the GitHub Release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # `--publish never` prevents electron-builder from creating its own
+      # draft release when GH_TOKEN is present on a tag build — the Release
+      # is created below by softprops/action-gh-release instead.
+      - name: Build portable Electron app
+        run: npm run build:electron -- --publish never
+        env:
+          EP_PUBLISH: never
+
+      # electron-builder names the artifact after productName + version
+      # ("Nuke File Manager 0.4.0.exe"). Copy it to a stable, download-friendly
+      # name read from package.json, and emit a sha256sum-compatible checksum.
+      - name: Stage .exe with stable name + SHA-256 checksum
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = (Get-Content package.json -Raw | ConvertFrom-Json).version
+          $exe = Get-ChildItem -Path release -Filter '*.exe' -File |
+            Where-Object { $_.Name -like 'Nuke File Manager*' } |
+            Select-Object -First 1
+          if (-not $exe) {
+            $exe = Get-ChildItem -Path release -Filter '*.exe' -File | Select-Object -First 1
+          }
+          if (-not $exe) { throw 'No .exe found in release/ — did electron-builder run?' }
+
+          $stable = "NukeFileManager-$version-win-x64.exe"
+          Copy-Item -Path $exe.FullName -Destination $stable -Force
+
+          $hash = (Get-FileHash -Path $stable -Algorithm SHA256).Hash.ToLowerInvariant()
+          # sha256sum-compatible line: "<hash>  <filename>"
+          "$hash  $stable" | Set-Content -Path "$stable.sha256" -Encoding ascii
+
+          Write-Host "Staged: $stable"
+          Write-Host "SHA-256: $hash"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            NukeFileManager-*-win-x64.exe
+            NukeFileManager-*-win-x64.exe.sha256
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          body: |
+            Portable Windows x64 build. **The `.exe` is not code-signed** — SmartScreen /
+            Smart App Control may warn or block it on first run (*More info* → *Run anyway*).
+            Verify the SHA-256 checksum in the attached `.sha256` file before running.

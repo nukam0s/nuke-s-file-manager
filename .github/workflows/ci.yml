@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# CI — type-check + unit tests on every push and pull request.
+#
+# The smoke tests (scripts/smoke-*.mjs) are intentionally NOT part of CI:
+# they require a live backend (node server/main.js) — see README "Smoke tests".
+# Tag pushes (v*) are handled by release.yml.
+# ---------------------------------------------------------------------------
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  ci:
+    name: Typecheck & tests (windows-latest, Node 22)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck (tsc --noEmit)
+        run: npm run typecheck
+
+      - name: Unit tests (Vitest)
+        run: npm test

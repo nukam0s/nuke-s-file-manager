@@ -7,6 +7,42 @@ shipped as a **portable native Electron app** for Windows (single `.exe`, no bro
 
 ---
 
+## Download (Windows x64)
+
+End users don't need to build anything — grab a ready-to-run portable `.exe` from the
+[**Releases** page](../../releases/latest):
+
+1. Download **`NukeFileManager-<version>-win-x64.exe`** from the
+   [latest release](../../releases/latest), together with its `.sha256` checksum file.
+2. *(Optional but recommended)* verify the checksum (see below).
+3. Double-click the `.exe` — a native window opens, **no installation, no browser, no console**.
+
+> ### ⚠️ The published `.exe` is unsigned
+> Release binaries are built by GitHub Actions **without a code-signing certificate**, so Windows
+> may warn or block on first run:
+>
+> - **SmartScreen** shows *"Windows protected your PC"* → **More info** → **Run anyway**.
+> - **Smart App Control / WDAC** (Windows 11, some fresh or corporate installs) may block it
+>   outright, with no override in the UI.
+>
+> Before running, verify the SHA-256 checksum against the `.sha256` file attached to the release:
+>
+> ```powershell
+> Get-FileHash .\NukeFileManager-<version>-win-x64.exe -Algorithm SHA256
+> # equivalent: certutil -hashfile NukeFileManager-<version>-win-x64.exe SHA256
+> ```
+
+### Two ways to get the app
+
+| Path | For | How |
+|---|---|---|
+| **(a) Download a Release** | end users | get `NukeFileManager-<version>-win-x64.exe` from [Releases](../../releases/latest) and run it |
+| **(b) Build from source** | developers | `npm install` → `npm run build:electron` → the `.exe` lands in `release/` (see [Build](#build)) |
+
+Releases are produced automatically when a `v*` tag is pushed — see
+[`.github/workflows/release.yml`](.github/workflows/release.yml). CI (typecheck + tests) runs on
+every push and pull request — see [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ## Features (v0.4)
 
 - Two panes, **tabs**, **history**, **quick filter**, **tree view**, **drag & drop**.
